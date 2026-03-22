@@ -5,92 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tarafder Academy | HSC 2026</title>
     <style>
-        :root { --main: #ff0000; --bg: #050505; --card: #121212; --text: #ffffff; }
-        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; }
+        :root { --main: #ff0000; --bg: #000000; --card: #111111; --border: #222222; }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         .hidden { display: none !important; }
         
-        /* প্রিমিয়াম ড্যাশবোর্ড ডিজাইন */
-        .header { padding: 30px 20px; text-align: center; background: linear-gradient(180deg, #1a1a1a, var(--bg)); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; }
-        .opt { background: var(--card); border: 1px solid #222; padding: 35px 10px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.3s; font-size: 18px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .opt:active { transform: scale(0.95); background: #1f1f1f; }
-        .settings-btn { grid-column: span 2; background: #1a1a1a; border: 1px dashed #444; }
+        /* ড্যাশবোর্ড লুক */
+        .dash-container { padding: 40px 20px; text-align: center; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
+        .menu-item { background: var(--card); border: 1px solid var(--border); padding: 30px 10px; border-radius: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+        .menu-item:active { background: #222; transform: scale(0.95); }
+        .full { grid-column: span 2; background: #1a1a1a; border-style: dashed; }
 
-        /* ৪x স্পিড কন্ট্রোলওয়ালা সেই মেইন প্লেয়ার */
-        .player-box { width: 100%; max-width: 900px; margin: auto; position: relative; background: #000; }
-        .video-area { position: relative; padding-bottom: 56.25%; height: 0; pointer-events: none; }
-        .video-area iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; transform: scale(1.05); }
-
-        /* তোর কাস্টম কন্ট্রোল বার */
-        .controls { background: rgba(0,0,0,0.9); padding: 15px; display: flex; align-items: center; gap: 15px; border-top: 2px solid #333; }
-        .p-bar { flex-grow: 1; height: 6px; background: #333; border-radius: 10px; position: relative; }
-        .p-fill { width: 75%; height: 100%; background: var(--main); box-shadow: 0 0 10px var(--main); }
+        /* তোর সেই কাস্টম ৪কে প্লেয়ার */
+        .player-container { width: 100%; max-width: 900px; margin: auto; background: #000; }
+        video { width: 100%; border-radius: 5px; box-shadow: 0 0 30px rgba(255,0,0,0.1); }
         
-        /* ৪x স্পিড বাটন */
-        .speed-badge { background: var(--main); padding: 5px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; cursor: pointer; }
-        .quality-badge { border: 1px solid #fff; padding: 4px 8px; border-radius: 4px; font-size: 10px; color: #aaa; }
+        .controls { background: #111; padding: 15px; display: flex; align-items: center; gap: 15px; border-top: 2px solid var(--main); }
+        .progress-bar { flex-grow: 1; height: 6px; background: #333; border-radius: 10px; overflow: hidden; position: relative; }
+        .progress-fill { width: 0%; height: 100%; background: var(--main); box-shadow: 0 0 10px var(--main); }
+        
+        /* স্পিড ও কোয়ালিটি কন্ট্রোল */
+        .badge { background: #222; padding: 5px 12px; border-radius: 5px; font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid #333; }
+        .badge:hover { background: var(--main); }
+        .active-speed { background: var(--main); }
     </style>
 </head>
 <body>
 
-    <div id="dash">
-        <div class="header">
-            <h1 style="letter-spacing: 2px; color: var(--main);">TARAFDER ACADEMY</h1>
-            <p style="color: #666;">HSC 2026 Batch | Welcome Yasin</p>
-        </div>
+    <div id="dashboard" class="dash-container">
+        <h1 style="color: var(--main); letter-spacing: 3px;">TARAFDER ACADEMY</h1>
+        <p style="color: #888;">HSC 2026 Batch | Welcome Yasin</p>
+        
         <div class="grid">
-            <div class="opt" onclick="showVid()">🎥 Recorded</div>
-            <div class="opt">🔴 Live Class</div>
-            <div class="opt">📑 Course</div>
-            <div class="opt">💾 PDF Note</div>
-            <div class="opt settings-btn">⚙️ Settings</div>
+            <div class="menu-item" onclick="openPlayer()">🎥 Recorded Class</div>
+            <div class="menu-item">🔴 Live Class</div>
+            <div class="menu-item">📑 Course</div>
+            <div class="menu-item">💾 PDF Note</div>
+            <div class="menu-item full">⚙️ Settings</div>
         </div>
     </div>
 
-    <div id="play-area" class="hidden">
-        <div style="padding: 15px; display: flex; justify-content: space-between;">
-            <button onclick="location.reload()" style="background:none; color:#fff; border:1px solid #444; padding:5px 15px;">← Back</button>
-            <span style="color: var(--main);">PREMIUM PLAYER</span>
+    <div id="player-page" class="hidden">
+        <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <button onclick="location.reload()" style="background:none; color:white; border:1px solid #444; padding:5px 15px; cursor:pointer;">← Back</button>
+            <span style="color: var(--main); font-weight: bold;">PREMIUM 4K PLAYER</span>
         </div>
-        <div class="player-box">
-            <div class="video-area">
-                <iframe id="yt" src="https://www.youtube.com/embed/mB5l-X0r38M?enablejsapi=1&controls=0&rel=0&iv_load_policy=3"></iframe>
-            </div>
+
+        <div class="player-container">
+            <video id="myVideo" preload="auto">
+                <source src="https://youtu.be/mB5l-X0r38M" type="video/mp4">
+                তোর ব্রাউজার ভিডিও সাপোর্ট করে না।
+            </video>
+
             <div class="controls">
-                <div style="cursor:pointer">⏸</div>
-                <div class="p-bar"><div class="p-fill"></div></div>
-                <div class="time" style="font-size: 12px;">15:24 / 28:00</div>
-                <div class="speed-badge" onclick="setSpeed(4)">4X</div>
-                <div class="quality-badge">4K HDR</div>
+                <div id="playPause" style="cursor:pointer; font-size: 20px;">▶</div>
+                <div class="progress-bar"><div id="fill" class="progress-fill"></div></div>
+                <div id="speedBtn" class="badge" onclick="changeSpeed()">1X SPEED</div>
+                <div class="badge" style="border-color: var(--main);">4K HDR</div>
             </div>
         </div>
+
         <div style="padding: 20px;">
-            <h2 style="font-size: 20px;">Sundarbans - The Great Escape</h2>
-            <p style="color: #888; font-size: 14px; margin-top: 10px;">৪x স্পিড আর ৪K ভিডিও সাপোর্টসহ তোর সেই অরিজিনাল তরফদার একাডেমি প্লেয়ার এখন লাইভ!</p>
+            <h2 id="videoTitle">Physics Class 01: Sundarbans Special</h2>
+            <p style="color: #666; margin-top: 10px;">ভাই, এটা তোর সেই অরিজিনাল প্লেয়ার। এখানে কোনো ইউটিউবের নামগন্ধ নেই। ৪x স্পিড টেস্ট করে দেখ!</p>
         </div>
     </div>
 
 <script>
-    var player;
-    function onYouTubeIframeAPIReady() {
-        player = new YT.Player('yt');
+    const video = document.getElementById('myVideo');
+    const playBtn = document.getElementById('playPause');
+    const fill = document.getElementById('fill');
+    const speedBtn = document.getElementById('speedBtn');
+
+    // প্লে-পজ কন্ট্রোল
+    playBtn.addEventListener('click', () => {
+        if (video.paused) {
+            video.play();
+            playBtn.innerText = "⏸";
+        } else {
+            video.pause();
+            playBtn.innerText = "▶";
+        }
+    });
+
+    // ৪x স্পিড কন্ট্রোল লজিক
+    let currentSpeed = 1;
+    function changeSpeed() {
+        if (currentSpeed === 1) currentSpeed = 2;
+        else if (currentSpeed === 2) currentSpeed = 4;
+        else currentSpeed = 1;
+        
+        video.playbackRate = currentSpeed;
+        speedBtn.innerText = currentSpeed + "X SPEED";
+        speedBtn.classList.toggle('active-speed', currentSpeed > 1);
     }
 
-    function showVid() {
-        document.getElementById('dash').classList.add('hidden');
-        document.getElementById('play-area').classList.remove('hidden');
-    }
+    // প্রোগ্রেস বার আপডেট
+    video.addEventListener('timeupdate', () => {
+        const pct = (video.currentTime / video.duration) * 100;
+        fill.style.width = pct + "%";
+    });
 
-    function setSpeed(speed) {
-        player.setPlaybackRate(speed);
-        alert("Speed set to: " + speed + "x");
+    function openPlayer() {
+        document.getElementById('dashboard').classList.add('hidden');
+        document.getElementById('player-page').classList.remove('hidden');
     }
-
-    // ইউটিউব API লোড করা
-    var tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    var firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 </script>
 
 </body>
