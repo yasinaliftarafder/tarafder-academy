@@ -9,24 +9,21 @@
         body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
         .hidden { display: none !important; }
         
-        /* ড্যাশবোর্ড লুক */
         .dash-container { padding: 40px 20px; text-align: center; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
-        .menu-item { background: var(--card); border: 1px solid var(--border); padding: 30px 10px; border-radius: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
-        .menu-item:active { background: #222; transform: scale(0.95); }
+        .menu-item { background: var(--card); border: 1px solid var(--border); padding: 30px 10px; border-radius: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .full { grid-column: span 2; background: #1a1a1a; border-style: dashed; }
 
-        /* তোর সেই কাস্টম ৪কে প্লেয়ার */
-        .player-container { width: 100%; max-width: 900px; margin: auto; background: #000; }
-        video { width: 100%; border-radius: 5px; box-shadow: 0 0 30px rgba(255,0,0,0.1); }
+        /* ৪কে প্লেয়ার কন্টেইনার */
+        .player-container { width: 100%; max-width: 900px; margin: auto; background: #000; position: relative; }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; pointer-events: none; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; transform: scale(1.05); }
         
         .controls { background: #111; padding: 15px; display: flex; align-items: center; gap: 15px; border-top: 2px solid var(--main); }
-        .progress-bar { flex-grow: 1; height: 6px; background: #333; border-radius: 10px; overflow: hidden; position: relative; }
-        .progress-fill { width: 0%; height: 100%; background: var(--main); box-shadow: 0 0 10px var(--main); }
+        .progress-bar { flex-grow: 1; height: 6px; background: #333; border-radius: 10px; overflow: hidden; }
+        .progress-fill { width: 0%; height: 100%; background: var(--main); box-shadow: 0 0 10px var(--main); transition: 0.1s; }
         
-        /* স্পিড ও কোয়ালিটি কন্ট্রোল */
         .badge { background: #222; padding: 5px 12px; border-radius: 5px; font-size: 12px; font-weight: bold; cursor: pointer; border: 1px solid #333; }
-        .badge:hover { background: var(--main); }
         .active-speed { background: var(--main); }
     </style>
 </head>
@@ -35,7 +32,6 @@
     <div id="dashboard" class="dash-container">
         <h1 style="color: var(--main); letter-spacing: 3px;">TARAFDER ACADEMY</h1>
         <p style="color: #888;">HSC 2026 Batch | Welcome Yasin</p>
-        
         <div class="grid">
             <div class="menu-item" onclick="openPlayer()">🎥 Recorded Class</div>
             <div class="menu-item">🔴 Live Class</div>
@@ -52,10 +48,9 @@
         </div>
 
         <div class="player-container">
-            <video id="myVideo" preload="auto">
-                <source src="https://youtu.be/mB5l-X0r38M" type="video/mp4">
-                তোর ব্রাউজার ভিডিও সাপোর্ট করে না।
-            </video>
+            <div class="video-wrapper">
+                <div id="yt-video"></div>
+            </div>
 
             <div class="controls">
                 <div id="playPause" style="cursor:pointer; font-size: 20px;">▶</div>
@@ -64,54 +59,73 @@
                 <div class="badge" style="border-color: var(--main);">4K HDR</div>
             </div>
         </div>
-
         <div style="padding: 20px;">
-            <h2 id="videoTitle">Physics Class 01: Sundarbans Special</h2>
-            <p style="color: #666; margin-top: 10px;">ভাই, এটা তোর সেই অরিজিনাল প্লেয়ার। এখানে কোনো ইউটিউবের নামগন্ধ নেই। ৪x স্পিড টেস্ট করে দেখ!</p>
+            <h2>Physics Class 01: Sundarbans Special</h2>
+            <p style="color: #666;">ইউটিউব লোগো ছাড়াই ৪x স্পিডে তোর তরাফদার একাডেমি প্লেয়ার!</p>
         </div>
     </div>
 
-<script>
-    const video = document.getElementById('myVideo');
-    const playBtn = document.getElementById('playPause');
-    const fill = document.getElementById('fill');
-    const speedBtn = document.getElementById('speedBtn');
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        let player;
+        const playBtn = document.getElementById('playPause');
+        const fill = document.getElementById('fill');
+        const speedBtn = document.getElementById('speedBtn');
 
-    // প্লে-পজ কন্ট্রোল
-    playBtn.addEventListener('click', () => {
-        if (video.paused) {
-            video.play();
-            playBtn.innerText = "⏸";
-        } else {
-            video.pause();
-            playBtn.innerText = "▶";
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-video', {
+                videoId: 'mB5l-X0r38M', // তোর ইউটিউব ভিডিও আইডি
+                playerVars: {
+                    'controls': 0,
+                    'modestbranding': 1,
+                    'rel': 0,
+                    'showinfo': 0,
+                    'iv_load_policy': 3,
+                    'disablekb': 1
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
         }
-    });
 
-    // ৪x স্পিড কন্ট্রোল লজিক
-    let currentSpeed = 1;
-    function changeSpeed() {
-        if (currentSpeed === 1) currentSpeed = 2;
-        else if (currentSpeed === 2) currentSpeed = 4;
-        else currentSpeed = 1;
-        
-        video.playbackRate = currentSpeed;
-        speedBtn.innerText = currentSpeed + "X SPEED";
-        speedBtn.classList.toggle('active-speed', currentSpeed > 1);
-    }
+        function onPlayerReady() {
+            // প্রোগ্রেস বার আপডেট করার জন্য টাইমার
+            setInterval(() => {
+                if (player && player.getCurrentTime) {
+                    const pct = (player.getCurrentTime() / player.getDuration()) * 100;
+                    fill.style.width = pct + "%";
+                }
+            }, 500);
+        }
 
-    // প্রোগ্রেস বার আপডেট
-    video.addEventListener('timeupdate', () => {
-        const pct = (video.currentTime / video.duration) * 100;
-        fill.style.width = pct + "%";
-    });
+        playBtn.addEventListener('click', () => {
+            const state = player.getPlayerState();
+            if (state == 1) { // 1 মানে Playing
+                player.pauseVideo();
+                playBtn.innerText = "▶";
+            } else {
+                player.playVideo();
+                playBtn.innerText = "⏸";
+            }
+        });
 
-    function openPlayer() {
-        document.getElementById('dashboard').classList.add('hidden');
-        document.getElementById('player-page').classList.remove('hidden');
-    }
-</script>
+        let currentSpeed = 1;
+        function changeSpeed() {
+            if (currentSpeed === 1) currentSpeed = 2;
+            else if (currentSpeed === 2) currentSpeed = 4;
+            else currentSpeed = 1;
+            
+            player.setPlaybackRate(currentSpeed);
+            speedBtn.innerText = currentSpeed + "X SPEED";
+            speedBtn.classList.toggle('active-speed', currentSpeed > 1);
+        }
 
+        function openPlayer() {
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('player-page').classList.remove('hidden');
+        }
+    </script>
 </body>
 </html>
 
