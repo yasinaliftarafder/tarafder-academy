@@ -5,88 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tarafder Academy | HSC 2026</title>
     <style>
-        :root { --primary: #58a6ff; --bg: #0d1117; --card: #161b22; --border: #30363d; }
-        body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; }
-        .container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 25px; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
-        h2 { color: var(--primary); margin-bottom: 20px; }
-        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid var(--border); background: #0d1117; color: white; outline: none; }
-        button { width: 100%; padding: 12px; background: #238636; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
-        /* ড্যাশবোর্ড গ্রিড */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; max-width: 400px; }
-        .menu-item { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s; }
-        .menu-item:hover { border-color: var(--primary); transform: translateY(-3px); }
+        :root { --primary: #58a6ff; --bg: #0d1117; --card: #161b22; --border: #30363d; --success: #238636; }
+        body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { width: 90%; max-width: 400px; text-align: center; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid var(--border); background: #0d1117; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--success); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { opacity: 0.8; }
+        .hidden { display: none !important; }
 
-        /* প্লেয়ার সেকশন */
-        .player-container { width: 100%; max-width: 800px; display: none; }
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--border); }
+        /* ড্যাশবোর্ড গ্রিড */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .menu-item { background: var(--card); border: 1px solid var(--border); padding: 25px 10px; border-radius: 12px; cursor: pointer; font-size: 14px; }
+        .menu-item:hover { border-color: var(--primary); background: #1c2128; }
+
+        /* ভিডিও প্লেয়ার স্টাইল */
+        #player-section { width: 100%; max-width: 800px; }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: #000; }
         .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .hidden { display: none; }
+        .back-btn { background: #30363d; margin-bottom: 15px; width: auto; padding: 8px 20px; display: inline-block; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="login-section" class="card">
-        <h2>Tarafder Academy</h2>
-        <p>আপনার মোবাইল নম্বর দিন</p>
-        <input type="tel" id="phone" placeholder="01XXXXXXXXX">
+    <div id="login-section" class="container card">
+        <h2 style="color: var(--primary);">Tarafder Academy</h2>
+        <p>মোবাইল নম্বর দিয়ে লগইন করুন</p>
+        <input type="tel" id="phone" placeholder="017XXXXXXXX">
         <button onclick="showOtp()">OTP পাঠান</button>
     </div>
 
-    <div id="otp-section" class="card hidden">
+    <div id="otp-section" class="container card hidden">
         <h2>ভেরিফিকেশন</h2>
-        <p>আপনার ফোনে পাঠানো কোডটি দিন</p>
-        <input type="number" id="otp" placeholder="XXXX">
-        <button onclick="showDashboard()">নিশ্চিত করুন</button>
+        <p>৪ ডিজিটের কোডটি দিন</p>
+        <input type="number" id="otp" placeholder="1234">
+        <button onclick="showDashboard()">Login নিশ্চিত করুন</button>
     </div>
 
-    <div id="dashboard-section" class="hidden">
-        <h2 style="text-align: center;">Welcome, Yasin!</h2>
+    <div id="dashboard-section" class="container hidden">
+        <h2 style="margin-bottom: 5px;">Welcome Back!</h2>
+        <p style="color: #8b949e; margin-bottom: 25px;">HSC 2026 Premium Batch</p>
         <div class="grid">
-            <div class="menu-item" onclick="showPlayer()">🎥 Recorded Class</div>
-            <div class="menu-item">🔴 Live Class</div>
-            <div class="menu-item">📚 Lecture Notes</div>
-            <div class="menu-item">💬 Support</div>
+            <div class="menu-item" onclick="showPlayer()">🎥<br>Recorded Class</div>
+            <div class="menu-item">🔴<br>Live Class</div>
+            <div class="menu-item">📚<br>Lecture Notes</div>
+            <div class="menu-item">💬<br>Support</div>
         </div>
     </div>
 
-    <div id="player-section" class="player-container hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <button onclick="backToDash()" style="width:auto; padding:5px 15px; background:#30363d;">← Back</button>
-            <span style="color:var(--primary)">HSC 2026 Premium</span>
-        </div>
+    <div id="player-section" class="container hidden">
+        <button class="back-btn" onclick="backToDash()">← Back to Dashboard</button>
         <div class="video-wrapper">
-            <iframe 
-                src="https://www.youtube.com/embed/mB5l-X0r38M?rel=0&modestbranding=1&controls=1" 
-                allowfullscreen>
-            </iframe>
+            <iframe id="main-video" src="" allowfullscreen></iframe>
         </div>
-        <h3 style="margin-top:15px;">Sundarbans Tour - Cinematic Vlog</h3>
+        <h3 style="text-align: left; margin-top: 15px; color: var(--primary);">Class 01: Sundarbans Tour Vlog</h3>
     </div>
-</div>
 
 <script>
+    const videoURL = "https://www.youtube.com/embed/mB5l-X0r38M?rel=0&modestbranding=1&autoplay=1";
+
     function showOtp() {
-        if(document.getElementById('phone').value.length > 10) {
+        let phone = document.getElementById('phone').value;
+        if(phone.length >= 10) {
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('otp-section').classList.remove('hidden');
-        } else { alert('সঠিক নম্বর দিন!'); }
+        } else { alert("সঠিক মোবাইল নম্বর দিন!"); }
     }
 
     function showDashboard() {
         document.getElementById('otp-section').classList.add('hidden');
         document.getElementById('dashboard-section').classList.remove('hidden');
+        // বডি থেকে সেন্টার ফ্ল্যাগ সরানো যাতে ড্যাশবোর্ড উপরে থাকে
+        document.body.style.alignItems = "flex-start";
+        document.body.style.paddingTop = "50px";
     }
 
     function showPlayer() {
         document.getElementById('dashboard-section').classList.add('hidden');
         document.getElementById('player-section').classList.remove('hidden');
+        document.getElementById('main-video').src = videoURL; // ক্লিক করলে ভিডিও লোড হবে
     }
 
     function backToDash() {
         document.getElementById('player-section').classList.add('hidden');
+        document.getElementById('main-video').src = ""; // ভিডিও বন্ধ হবে
         document.getElementById('dashboard-section').classList.remove('hidden');
     }
 </script>
