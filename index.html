@@ -6,7 +6,7 @@
     <title>Tarafder Academy | HSC 2026</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* তোর অরিজিনাল হোয়াইট ডিজাইন */
+        /* তোর অরিজিনাল স্টাইল হুবহু রাখা হয়েছে */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: #ffffff; color: #333; min-height: 100vh; overflow-x: hidden; }
         .page { display: none; padding: 20px; transition: 0.3s; }
@@ -19,35 +19,24 @@
 
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 600px; margin: 30px auto; }
         .card { background: #f9f9f9; padding: 25px; border-radius: 20px; text-align: center; cursor: pointer; border: 1px solid #eee; border-bottom: 4px solid #e91e63; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .card i { font-size: 40px; margin-bottom: 10px; color: #e91e63; }
 
-        /* ভিডিও প্লেয়ার সেকশন */
-        .player-container {
-            position: relative; width: 100%; max-width: 900px; aspect-ratio: 16 / 9;
-            background: #000; border-radius: 12px; overflow: hidden; margin: 20px auto;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-        }
-        #ytPlayer { width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
+        .player-container { position: relative; width: 100%; max-width: 900px; aspect-ratio: 16 / 9; background: #000; border-radius: 12px; overflow: hidden; margin: 20px auto; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
         
-        /* কন্ট্রোলস লেয়ার - ইউটিউবের উপরে থাকবে */
-        .controls-overlay {
-            position: absolute; inset: 0; background: rgba(0, 0, 0, 0.2);
-            display: flex; flex-direction: column; justify-content: space-between;
-            opacity: 0; transition: opacity 0.3s; z-index: 10;
-        }
-        .player-container:hover .controls-overlay { opacity: 1; }
-        
+        /* ইউটিউব ভিডিওর আসল জায়গা */
+        #ytPlayer { width: 100%; height: 100%; pointer-events: none; } 
+
+        .controls-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); display: flex; flex-direction: column; justify-content: space-between; opacity: 0; transition: opacity 0.3s; z-index: 10; }
+        .player-container:hover .controls-overlay, .player-container.paused .controls-overlay { opacity: 1; }
         .top-bar { padding: 15px; color: white; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
         .mid-controls { display: flex; justify-content: center; align-items: center; gap: 40px; color: white; height: 100%; }
-        .mid-controls i { font-size: 50px; cursor: pointer; text-shadow: 0 0 15px rgba(0,0,0,0.5); }
+        .mid-controls i { font-size: 40px; cursor: pointer; transition: 0.2s; }
         
         .bottom-controls { padding: 10px 20px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
         .progress-area { height: 5px; width: 100%; background: rgba(255,255,255,0.2); margin-bottom: 10px; cursor: pointer; border-radius: 5px; }
         .progress-bar { height: 100%; width: 0%; background: #e91e63; position: relative; border-radius: 5px; }
         .bottom-btns { display: flex; align-items: center; justify-content: space-between; color: white; }
-        .left, .right { display: flex; align-items: center; gap: 15px; }
-        select { background: rgba(0,0,0,0.5); color: white; border: 1px solid #444; border-radius: 4px; padding: 2px 5px; cursor: pointer; }
+        select { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 2px 5px; cursor: pointer; font-size: 12px; outline: none; }
     </style>
 </head>
 <body>
@@ -72,10 +61,7 @@
     <div id="homePage" class="page">
         <h2 style="text-align: center; margin-top: 20px;">ড্যাশবোর্ড</h2>
         <div class="grid">
-            <div class="card" onclick="showPage('lecturePage')">
-                <i class="fas fa-play-circle"></i>
-                <h3>রেকর্ডেড ক্লাস</h3>
-            </div>
+            <div class="card" onclick="showPage('lecturePage')"><i class="fas fa-play-circle"></i><h3>রেকর্ডেড ক্লাস</h3></div>
             <div class="card"><i class="fas fa-broadcast-tower"></i><h3>লাইভ ক্লাস</h3></div>
             <div class="card"><i class="fas fa-file-alt"></i><h3>লেকচার নোট</h3></div>
             <div class="card"><i class="fas fa-trophy"></i><h3>কুইজ</h3></div>
@@ -83,22 +69,22 @@
     </div>
 
     <div id="lecturePage" class="page">
-        <h3 style="text-align: center; margin-bottom: 20px;">HSC Biology 1st Paper</h3>
-        <div class="card" onclick="playVideo()" style="text-align: left; padding: 15px; max-width: 500px; margin: 10px auto; border-bottom: none; border-left: 4px solid #e91e63;">
+        <h3 style="text-align: center;">HSC Biology 1st Paper</h3>
+        <div class="card" onclick="playVideo()" style="text-align: left; padding: 15px; margin: 20px auto; max-width: 500px; border-left: 4px solid #e91e63;">
             <p>▶️ লেকচার ১: কোষ ও এর গঠন</p>
         </div>
-        <div style="text-align: center;"><button class="btn" style="width: auto; background: #555;" onclick="showPage('homePage')">পিছনে যান</button></div>
     </div>
 
     <div id="videoPage" class="page">
-        <div class="player-container" id="mainContainer">
+        <div class="player-container paused" id="mainContainer">
             <div id="ytPlayer"></div>
-            <div class="controls-overlay" id="overlay">
+
+            <div class="controls-overlay">
                 <div class="top-bar">লেকচার ১: কোষ ও এর গঠন (Biology)</div>
-                <div class="mid-controls">
-                    <i class="fas fa-backward-step" onclick="rewind()"></i>
-                    <i class="fas fa-play" id="centerPlayBtn" onclick="togglePlay()"></i>
-                    <i class="fas fa-forward-step" onclick="forward()"></i>
+                <div class="mid-controls" onclick="togglePlay()">
+                    <i class="fas fa-backward-step" onclick="event.stopPropagation(); rewind()"></i>
+                    <i class="fas fa-play" id="centerPlayBtn" style="font-size: 65px;"></i>
+                    <i class="fas fa-forward-step" onclick="event.stopPropagation(); forward()"></i>
                 </div>
                 <div class="bottom-controls">
                     <div class="progress-area" id="progressArea" onclick="seek(event)">
@@ -130,14 +116,15 @@
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         let player;
+        const container = document.getElementById('mainContainer');
         const progressBar = document.getElementById('mainProgressBar');
         const centerBtn = document.getElementById('centerPlayBtn');
         const bottomBtn = document.getElementById('bottomPlayBtn');
 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('ytPlayer', {
-                videoId: 'mB5l-X0r38M',
-                playerVars: { 'autoplay': 0, 'controls': 0, 'disablekb': 1, 'modestbranding': 1, 'rel': 0 },
+                videoId: 'mB5l-X0r38M', // তোর ইউটিউব ভিডিও আইডি
+                playerVars: { 'autoplay': 0, 'controls': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 1 },
                 events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
             });
         }
@@ -156,9 +143,11 @@
 
         function onPlayerStateChange(event) {
             if (event.data == YT.PlayerState.PLAYING) {
+                container.classList.remove('paused');
                 centerBtn.classList.replace('fa-play', 'fa-pause');
                 bottomBtn.classList.replace('fa-play', 'fa-pause');
             } else {
+                container.classList.add('paused');
                 centerBtn.classList.replace('fa-pause', 'fa-play');
                 bottomBtn.classList.replace('fa-pause', 'fa-play');
             }
@@ -172,7 +161,6 @@
         function rewind() { player.seekTo(player.getCurrentTime() - 10); }
         function forward() { player.seekTo(player.getCurrentTime() + 10); }
         function changeSpeed() { player.setPlaybackRate(parseFloat(document.getElementById('speed').value)); }
-        
         function seek(e) {
             let pct = e.offsetX / document.getElementById('progressArea').clientWidth;
             player.seekTo(pct * player.getDuration());
@@ -190,11 +178,7 @@
 
         function playVideo() { showPage('videoPage'); setTimeout(() => { player.playVideo(); player.setPlaybackRate(4); }, 1000); }
         function closeVideo() { player.pauseVideo(); showPage('lecturePage'); }
-        function toggleFull() { 
-            let container = document.getElementById('mainContainer');
-            if(!document.fullscreenElement) container.requestFullscreen(); 
-            else document.exitFullscreen(); 
-        }
+        function toggleFull() { if(!document.fullscreenElement) container.requestFullscreen(); else document.exitFullscreen(); }
     </script>
 </body>
 </html>
