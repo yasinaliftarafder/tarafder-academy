@@ -3,221 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tarafder Academy | Premium Player</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Tarafder Academy | HSC 2026</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: #0f0f0f; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-
-        .player-container {
-            position: relative;
-            width: 90%;
-            max-width: 900px;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        :root {
+            --primary: #58a6ff;
+            --bg: #0d1117;
+            --card: #161b22;
+            --border: #30363d;
+            --red: #ff0000;
+            --success: #238636;
         }
 
-        video { width: 100%; height: 100%; object-fit: contain; cursor: pointer; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', Roboto, sans-serif; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
 
-        /* শিখো স্টাইল ওভারলে কন্ট্রোলস */
-        .controls-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 2;
-        }
+        .app-container { width: 100%; max-width: 480px; padding: 20px; position: relative; }
+        .hidden { display: none !important; }
 
-        .player-container:hover .controls-overlay,
-        .player-container.paused .controls-overlay { opacity: 1; }
+        /* ১. লগইন ও OTP সেকশন */
+        .auth-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 30px; margin-top: 60px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .logo-circle { width: 80px; height: 80px; background: var(--primary); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; }
+        input { width: 100%; padding: 15px; margin: 15px 0; border-radius: 10px; border: 1px solid var(--border); background: #010409; color: white; font-size: 16px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); }
+        .btn-primary { width: 100%; padding: 15px; background: var(--success); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; }
 
-        /* টপ বার (টাইটেল) */
-        .top-bar { padding: 20px; color: white; font-size: 18px; font-weight: 500; background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent); }
+        /* ২. ড্যাশবোর্ড গ্রিড (৫টি অপশন) */
+        .dashboard-header { margin-top: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .menu-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 25px 15px; text-align: center; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        .menu-card i { font-size: 30px; margin-bottom: 12px; color: var(--primary); }
+        .menu-card h3 { font-size: 14px; font-weight: 600; }
+        .menu-card:hover { transform: translateY(-5px); border-color: var(--primary); background: #1c2128; }
+        .full-width { grid-column: span 2; display: flex; align-items: center; justify-content: center; gap: 15px; background: #21262d; }
 
-        /* মাঝখানের বড় বাটন */
-        .mid-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 40px;
-            color: white;
-        }
-        .mid-controls i { font-size: 40px; cursor: pointer; transition: 0.2s; opacity: 0.8; }
-        .mid-controls i:hover { opacity: 1; transform: scale(1.2); }
-        .play-pause-big { font-size: 70px !important; }
+        /* ৩. ভিডিও প্লেয়ার - তোর মেইন ডিজাইন */
+        .player-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .back-circle { width: 40px; height: 40px; border-radius: 50%; background: var(--card); display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); }
+        
+        .main-player-box { width: 100%; background: #000; border-radius: 15px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.7); position: relative; }
+        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; pointer-events: none; }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; transform: scale(1.04); }
 
-        /* বটম কন্ট্রোল বার */
-        .bottom-controls {
-            padding: 10px 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-        }
-
-        /* প্রোগ্রেস বার */
-        .progress-area {
-            height: 5px;
-            width: 100%;
-            background: rgba(255,255,255,0.2);
-            margin-bottom: 15px;
-            cursor: pointer;
-            position: relative;
-            border-radius: 5px;
-        }
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: #e91e63; /* শিখো থিম কালার */
-            position: relative;
-            border-radius: 5px;
-        }
-        .progress-bar::before {
-            content: '';
-            position: absolute;
-            right: -7px;
-            top: -5px;
-            height: 15px;
-            width: 15px;
-            background: #e91e63;
-            border-radius: 50%;
-        }
-
-        .bottom-btns { display: flex; align-items: center; justify-content: space-between; color: white; }
-        .left-side, .right-side { display: flex; align-items: center; gap: 20px; }
-        .bottom-btns i { cursor: pointer; font-size: 20px; }
-        .time-display { font-size: 14px; }
-
-        /* স্পিড মেনু */
-        select {
-            background: transparent;
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            border-radius: 5px;
-            padding: 2px 5px;
-            outline: none;
-            cursor: pointer;
-        }
+        .custom-controls { background: rgba(22, 27, 34, 0.95); padding: 15px; display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); }
+        .play-pause { font-size: 18px; cursor: pointer; width: 30px; }
+        .progress-container { flex-grow: 1; height: 6px; background: #333; border-radius: 10px; position: relative; cursor: pointer; }
+        .progress-bar { width: 45%; height: 100%; background: var(--red); border-radius: 10px; position: relative; }
+        .progress-bar::after { content: ''; position: absolute; right: -5px; top: -4px; width: 14px; height: 14px; background: var(--red); border-radius: 50%; box-shadow: 0 0 10px var(--red); }
+        .time { font-size: 11px; font-family: monospace; color: #8b949e; }
     </style>
 </head>
 <body>
 
-<div class="player-container paused" id="mainContainer">
-    <video id="mainVideo" src="assets/video/sample.mp4"></video>
+<div class="app-container">
+    
+    <div id="login-page" class="auth-card">
+        <div class="logo-circle">TA</div>
+        <h2 style="margin-bottom: 10px;">Tarafder Academy</h2>
+        <p style="color: #8b949e; font-size: 14px;">HSC 2026 Premium Batch</p>
+        <input type="tel" id="userPhone" placeholder="আপনার মোবাইল নম্বর লিখুন">
+        <button class="btn-primary" onclick="goToOtp()">OTP পাঠান</button>
+    </div>
 
-    <div class="controls-overlay">
-        <div class="top-bar">লেকচার ১: কোষ ও এর গঠন (Biology HSC 2026)</div>
+    <div id="otp-page" class="auth-card hidden">
+        <h2>ভেরিফিকেশন</h2>
+        <p style="color: #8b949e; margin-bottom: 10px;">৪ ডিজিটের কোডটি দিন</p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <input type="number" placeholder="X" style="width: 50px; text-align: center;">
+            <input type="number" placeholder="X" style="width: 50px; text-align: center;">
+            <input type="number" placeholder="X" style="width: 50px; text-align: center;">
+            <input type="number" placeholder="X" style="width: 50px; text-align: center;">
+        </div>
+        <button class="btn-primary" onclick="goToDash()">প্রবেশ করুন</button>
+    </div>
 
-        <div class="mid-controls">
-            <i class="fas fa-backward-step" onclick="rewind()"></i>
-            <i class="fas fa-play play-pause-big" id="centerPlayBtn"></i>
-            <i class="fas fa-forward-step" onclick="forward()"></i>
+    <div id="dash-page" class="hidden">
+        <div class="dashboard-header">
+            <div>
+                <h2 style="font-size: 22px;">আসসালামু আলাইকুম!</h2>
+                <p style="color: var(--primary); font-size: 14px;">HSC 2026 Batch - Yasin</p>
+            </div>
+            <div class="logo-circle" style="width: 45px; height: 45px; margin: 0; font-size: 16px;">Y</div>
         </div>
 
-        <div class="bottom-controls">
-            <div class="progress-area" id="progressArea">
-                <div class="progress-bar" id="mainProgressBar"></div>
+        <div class="grid-container">
+            <div class="menu-card">
+                <i class="fas fa-broadcast-tower" style="color: #ff4444;"></i>
+                <h3>Live Class</h3>
             </div>
-            <div class="bottom-btns">
-                <div class="left-side">
-                    <i class="fas fa-play" id="bottomPlayBtn"></i>
-                    <span class="time-display"><span id="current">0:00</span> / <span id="duration">0:00</span></span>
-                </div>
-                <div class="right-side">
-                    <select id="playbackSpeed">
-                        <option value="0.5">0.5x</option>
-                        <option value="1" selected>Normal</option>
-                        <option value="1.5">1.5x</option>
-                        <option value="2">2x</option>
-                    </select>
-                    <i class="fas fa-expand" id="fullScreenBtn"></i>
-                </div>
+            <div class="menu-card" onclick="goToPlayer()">
+                <i class="fas fa-play-circle"></i>
+                <h3>Recorded Class</h3>
+            </div>
+            <div class="menu-card">
+                <i class="fas fa-book"></i>
+                <h3>Course</h3>
+            </div>
+            <div class="menu-card">
+                <i class="fas fa-file-pdf"></i>
+                <h3>PDF Note</h3>
+            </div>
+            <div class="menu-card full-width">
+                <i class="fas fa-cog"></i>
+                <h3>Settings</h3>
             </div>
         </div>
     </div>
+
+    <div id="player-page" class="hidden">
+        <div class="player-header">
+            <div class="back-circle" onclick="backToDash()">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <h3>Physics Class 01</h3>
+        </div>
+
+        <div class="main-player-box">
+            <div class="video-wrapper">
+                <iframe id="videoFrame" src="https://www.youtube.com/embed/mB5l-X0r38M?enablejsapi=1&controls=0&modestbranding=1&rel=0"></iframe>
+            </div>
+            
+            <div class="custom-controls">
+                <div class="play-pause"><i class="fas fa-play"></i></div>
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+                <div class="time">15:30 / 28:00</div>
+                <i class="fas fa-expand" style="font-size: 14px; color: #8b949e;"></i>
+            </div>
+        </div>
+        <div style="margin-top: 20px; padding: 10px;">
+            <h2 style="font-size: 18px; color: var(--primary);">Sundarbans Cinematic Tour</h2>
+            <p style="color: #8b949e; font-size: 13px; margin-top: 5px;">Instructor: Tarafder Academy Team</p>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    const container = document.getElementById('mainContainer');
-    const video = document.getElementById('mainVideo');
-    const centerPlayBtn = document.getElementById('centerPlayBtn');
-    const bottomPlayBtn = document.getElementById('bottomPlayBtn');
-    const progressArea = document.getElementById('progressArea');
-    const progressBar = document.getElementById('mainProgressBar');
-    const speedSelect = document.getElementById('playbackSpeed');
-    const fullScreenBtn = document.getElementById('fullScreenBtn');
-
-    // প্লে-পজ ফাংশন
-    function togglePlay() {
-        if(video.paused) {
-            video.play();
-            container.classList.remove('paused');
-            centerPlayBtn.classList.replace('fa-play', 'fa-pause');
-            bottomPlayBtn.classList.replace('fa-play', 'fa-pause');
-        } else {
-            video.pause();
-            container.classList.add('paused');
-            centerPlayBtn.classList.replace('fa-pause', 'fa-play');
-            bottomPlayBtn.classList.replace('fa-pause', 'fa-play');
-        }
+    function goToOtp() {
+        if(document.getElementById('userPhone').value.length >= 10) {
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('otp-page').classList.remove('hidden');
+        } else { alert("সঠিক মোবাইল নম্বর দিন ভাই!"); }
     }
 
-    centerPlayBtn.addEventListener('click', togglePlay);
-    bottomPlayBtn.addEventListener('click', togglePlay);
-    video.addEventListener('click', togglePlay);
-
-    // ১০ সেকেন্ড আগে-পিছে
-    function forward() { video.currentTime += 10; }
-    function rewind() { video.currentTime -= 10; }
-
-    // টাইম আপডেট ও প্রোগ্রেস বার
-    video.addEventListener('timeupdate', (e) => {
-        const {currentTime, duration} = e.target;
-        let percent = (currentTime / duration) * 100;
-        progressBar.style.width = `${percent}%`;
-
-        document.getElementById('current').innerText = formatTime(currentTime);
-        document.getElementById('duration').innerText = formatTime(duration);
-    });
-
-    function formatTime(time) {
-        let min = Math.floor(time / 60);
-        let sec = Math.floor(time % 60);
-        return `${min}:${sec < 10 ? '0'+sec : sec}`;
+    function goToDash() {
+        document.getElementById('otp-page').classList.add('hidden');
+        document.getElementById('dash-page').classList.remove('hidden');
     }
 
-    // প্রোগ্রেস বারে ক্লিক করে টেনে দেখা
-    progressArea.addEventListener('click', (e) => {
-        let videoDuration = video.duration;
-        let progressWidth = progressArea.clientWidth;
-        let clickedOffsetX = e.offsetX;
-        video.currentTime = (clickedOffsetX / progressWidth) * videoDuration;
-    });
+    function goToPlayer() {
+        document.getElementById('dash-page').classList.add('hidden');
+        document.getElementById('player-page').classList.remove('hidden');
+    }
 
-    // স্পিড কন্ট্রোল
-    speedSelect.addEventListener('change', () => {
-        video.playbackRate = speedSelect.value;
-    });
-
-    // ফুল স্ক্রিন
-    fullScreenBtn.addEventListener('click', () => {
-        if (!document.fullscreenElement) {
-            container.requestFullscreen();
-        } else {
-            document.exitFullscreen();
-        }
-    });
-
-    // ডাবল ট্যাপ করে সিক (Double Tap Seek)
-    video.addEventListener('dblclick', (e) => {
-        const width = video.clientWidth;
-        if(e.offsetX > width / 2) forward();
-        else rewind();
-    });
+    function backToDash() {
+        document.getElementById('player-page').classList.add('hidden');
+        document.getElementById('dash-page').classList.remove('hidden');
+    }
 </script>
 
 </body>
