@@ -3,94 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tarafder Academy | HSC 2026</title>
+    <title>Tarafder Academy | Premium Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --primary: #58a6ff; --bg: #0d1117; --card: #161b22; --border: #30363d; --success: #238636; }
-        body { margin: 0; background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .container { width: 90%; max-width: 400px; text-align: center; }
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid var(--border); background: #0d1117; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: var(--success); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { opacity: 0.8; }
-        .hidden { display: none !important; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: #0f0f0f; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
 
-        /* ড্যাশবোর্ড গ্রিড */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .menu-item { background: var(--card); border: 1px solid var(--border); padding: 25px 10px; border-radius: 12px; cursor: pointer; font-size: 14px; }
-        .menu-item:hover { border-color: var(--primary); background: #1c2128; }
+        .player-container {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
 
-        /* ভিডিও প্লেয়ার স্টাইল */
-        #player-section { width: 100%; max-width: 800px; }
-        .video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: #000; }
-        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
-        .back-btn { background: #30363d; margin-bottom: 15px; width: auto; padding: 8px 20px; display: inline-block; }
+        video { width: 100%; height: 100%; object-fit: contain; cursor: pointer; }
+
+        /* শিখো স্টাইল ওভারলে কন্ট্রোলস */
+        .controls-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 2;
+        }
+
+        .player-container:hover .controls-overlay,
+        .player-container.paused .controls-overlay { opacity: 1; }
+
+        /* টপ বার (টাইটেল) */
+        .top-bar { padding: 20px; color: white; font-size: 18px; font-weight: 500; background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent); }
+
+        /* মাঝখানের বড় বাটন */
+        .mid-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px;
+            color: white;
+        }
+        .mid-controls i { font-size: 40px; cursor: pointer; transition: 0.2s; opacity: 0.8; }
+        .mid-controls i:hover { opacity: 1; transform: scale(1.2); }
+        .play-pause-big { font-size: 70px !important; }
+
+        /* বটম কন্ট্রোল বার */
+        .bottom-controls {
+            padding: 10px 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        }
+
+        /* প্রোগ্রেস বার */
+        .progress-area {
+            height: 5px;
+            width: 100%;
+            background: rgba(255,255,255,0.2);
+            margin-bottom: 15px;
+            cursor: pointer;
+            position: relative;
+            border-radius: 5px;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #e91e63; /* শিখো থিম কালার */
+            position: relative;
+            border-radius: 5px;
+        }
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            right: -7px;
+            top: -5px;
+            height: 15px;
+            width: 15px;
+            background: #e91e63;
+            border-radius: 50%;
+        }
+
+        .bottom-btns { display: flex; align-items: center; justify-content: space-between; color: white; }
+        .left-side, .right-side { display: flex; align-items: center; gap: 20px; }
+        .bottom-btns i { cursor: pointer; font-size: 20px; }
+        .time-display { font-size: 14px; }
+
+        /* স্পিড মেনু */
+        select {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 5px;
+            padding: 2px 5px;
+            outline: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-    <div id="login-section" class="container card">
-        <h2 style="color: var(--primary);">Tarafder Academy</h2>
-        <p>মোবাইল নম্বর দিয়ে লগইন করুন</p>
-        <input type="tel" id="phone" placeholder="017XXXXXXXX">
-        <button onclick="showOtp()">OTP পাঠান</button>
-    </div>
+<div class="player-container paused" id="mainContainer">
+    <video id="mainVideo" src="assets/video/sample.mp4"></video>
 
-    <div id="otp-section" class="container card hidden">
-        <h2>ভেরিফিকেশন</h2>
-        <p>৪ ডিজিটের কোডটি দিন</p>
-        <input type="number" id="otp" placeholder="1234">
-        <button onclick="showDashboard()">Login নিশ্চিত করুন</button>
-    </div>
+    <div class="controls-overlay">
+        <div class="top-bar">লেকচার ১: কোষ ও এর গঠন (Biology HSC 2026)</div>
 
-    <div id="dashboard-section" class="container hidden">
-        <h2 style="margin-bottom: 5px;">Welcome Back!</h2>
-        <p style="color: #8b949e; margin-bottom: 25px;">HSC 2026 Premium Batch</p>
-        <div class="grid">
-            <div class="menu-item" onclick="showPlayer()">🎥<br>Recorded Class</div>
-            <div class="menu-item">🔴<br>Live Class</div>
-            <div class="menu-item">📚<br>Lecture Notes</div>
-            <div class="menu-item">💬<br>Support</div>
+        <div class="mid-controls">
+            <i class="fas fa-backward-step" onclick="rewind()"></i>
+            <i class="fas fa-play play-pause-big" id="centerPlayBtn"></i>
+            <i class="fas fa-forward-step" onclick="forward()"></i>
+        </div>
+
+        <div class="bottom-controls">
+            <div class="progress-area" id="progressArea">
+                <div class="progress-bar" id="mainProgressBar"></div>
+            </div>
+            <div class="bottom-btns">
+                <div class="left-side">
+                    <i class="fas fa-play" id="bottomPlayBtn"></i>
+                    <span class="time-display"><span id="current">0:00</span> / <span id="duration">0:00</span></span>
+                </div>
+                <div class="right-side">
+                    <select id="playbackSpeed">
+                        <option value="0.5">0.5x</option>
+                        <option value="1" selected>Normal</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2x</option>
+                    </select>
+                    <i class="fas fa-expand" id="fullScreenBtn"></i>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div id="player-section" class="container hidden">
-        <button class="back-btn" onclick="backToDash()">← Back to Dashboard</button>
-        <div class="video-wrapper">
-            <iframe id="main-video" src="" allowfullscreen></iframe>
-        </div>
-        <h3 style="text-align: left; margin-top: 15px; color: var(--primary);">Class 01: Sundarbans Tour Vlog</h3>
-    </div>
+</div>
 
 <script>
-    const videoURL = "https://www.youtube.com/embed/mB5l-X0r38M?rel=0&modestbranding=1&autoplay=1";
+    const container = document.getElementById('mainContainer');
+    const video = document.getElementById('mainVideo');
+    const centerPlayBtn = document.getElementById('centerPlayBtn');
+    const bottomPlayBtn = document.getElementById('bottomPlayBtn');
+    const progressArea = document.getElementById('progressArea');
+    const progressBar = document.getElementById('mainProgressBar');
+    const speedSelect = document.getElementById('playbackSpeed');
+    const fullScreenBtn = document.getElementById('fullScreenBtn');
 
-    function showOtp() {
-        let phone = document.getElementById('phone').value;
-        if(phone.length >= 10) {
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('otp-section').classList.remove('hidden');
-        } else { alert("সঠিক মোবাইল নম্বর দিন!"); }
+    // প্লে-পজ ফাংশন
+    function togglePlay() {
+        if(video.paused) {
+            video.play();
+            container.classList.remove('paused');
+            centerPlayBtn.classList.replace('fa-play', 'fa-pause');
+            bottomPlayBtn.classList.replace('fa-play', 'fa-pause');
+        } else {
+            video.pause();
+            container.classList.add('paused');
+            centerPlayBtn.classList.replace('fa-pause', 'fa-play');
+            bottomPlayBtn.classList.replace('fa-pause', 'fa-play');
+        }
     }
 
-    function showDashboard() {
-        document.getElementById('otp-section').classList.add('hidden');
-        document.getElementById('dashboard-section').classList.remove('hidden');
-        // বডি থেকে সেন্টার ফ্ল্যাগ সরানো যাতে ড্যাশবোর্ড উপরে থাকে
-        document.body.style.alignItems = "flex-start";
-        document.body.style.paddingTop = "50px";
+    centerPlayBtn.addEventListener('click', togglePlay);
+    bottomPlayBtn.addEventListener('click', togglePlay);
+    video.addEventListener('click', togglePlay);
+
+    // ১০ সেকেন্ড আগে-পিছে
+    function forward() { video.currentTime += 10; }
+    function rewind() { video.currentTime -= 10; }
+
+    // টাইম আপডেট ও প্রোগ্রেস বার
+    video.addEventListener('timeupdate', (e) => {
+        const {currentTime, duration} = e.target;
+        let percent = (currentTime / duration) * 100;
+        progressBar.style.width = `${percent}%`;
+
+        document.getElementById('current').innerText = formatTime(currentTime);
+        document.getElementById('duration').innerText = formatTime(duration);
+    });
+
+    function formatTime(time) {
+        let min = Math.floor(time / 60);
+        let sec = Math.floor(time % 60);
+        return `${min}:${sec < 10 ? '0'+sec : sec}`;
     }
 
-    function showPlayer() {
-        document.getElementById('dashboard-section').classList.add('hidden');
-        document.getElementById('player-section').classList.remove('hidden');
-        document.getElementById('main-video').src = videoURL; // ক্লিক করলে ভিডিও লোড হবে
-    }
+    // প্রোগ্রেস বারে ক্লিক করে টেনে দেখা
+    progressArea.addEventListener('click', (e) => {
+        let videoDuration = video.duration;
+        let progressWidth = progressArea.clientWidth;
+        let clickedOffsetX = e.offsetX;
+        video.currentTime = (clickedOffsetX / progressWidth) * videoDuration;
+    });
 
-    function backToDash() {
-        document.getElementById('player-section').classList.add('hidden');
-        document.getElementById('main-video').src = ""; // ভিডিও বন্ধ হবে
-        document.getElementById('dashboard-section').classList.remove('hidden');
-    }
+    // স্পিড কন্ট্রোল
+    speedSelect.addEventListener('change', () => {
+        video.playbackRate = speedSelect.value;
+    });
+
+    // ফুল স্ক্রিন
+    fullScreenBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            container.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    });
+
+    // ডাবল ট্যাপ করে সিক (Double Tap Seek)
+    video.addEventListener('dblclick', (e) => {
+        const width = video.clientWidth;
+        if(e.offsetX > width / 2) forward();
+        else rewind();
+    });
 </script>
 
 </body>
