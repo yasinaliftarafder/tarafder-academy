@@ -6,45 +6,70 @@
     <title>Tarafder Academy | HSC 2026</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* তোর অরিজিনাল স্টাইল হুবহু রাখা হয়েছে */
+        /* ব্যাকগ্রাউন্ড এখন সাদা */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { background: #ffffff; color: #333; min-height: 100vh; overflow-x: hidden; }
+
         .page { display: none; padding: 20px; transition: 0.3s; }
         .active { display: block; animation: fadeIn 0.5s ease; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .login-box { background: #f9f9f9; padding: 40px; border-radius: 20px; max-width: 400px; margin: 80px auto; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid #eee; }
+        /* --- লগইন ও OTP স্টাইল (সাদা থিম) --- */
+        .login-box {
+            background: #f9f9f9; padding: 40px; border-radius: 20px;
+            max-width: 400px; margin: 80px auto; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid #eee;
+        }
         input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 8px; background: #fff; color: #333; outline: none; }
         .btn { width: 100%; padding: 14px; background: #e91e63; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
+        /* --- ড্যাশবোর্ড গ্রিড --- */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 600px; margin: 30px auto; }
         .card { background: #f9f9f9; padding: 25px; border-radius: 20px; text-align: center; cursor: pointer; border: 1px solid #eee; border-bottom: 4px solid #e91e63; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .card i { font-size: 40px; margin-bottom: 10px; color: #e91e63; }
 
-        .player-container { position: relative; width: 100%; max-width: 900px; aspect-ratio: 16 / 9; background: #000; border-radius: 12px; overflow: hidden; margin: 20px auto; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
-        
-        /* ইউটিউব ভিডিওর আসল জায়গা */
-        #ytPlayer { width: 100%; height: 100%; pointer-events: none; } 
-
-        .controls-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); display: flex; flex-direction: column; justify-content: space-between; opacity: 0; transition: opacity 0.3s; z-index: 10; }
+        /* --- প্রিমিয়াম ভিডিও প্লেয়ার (প্লেয়ারের ভেতরটা কালোই থাকবে ভিডিওর জন্য) --- */
+        .player-container {
+            position: relative; width: 100%; max-width: 900px; aspect-ratio: 16 / 9;
+            background: #000; border-radius: 12px; overflow: hidden; margin: 20px auto;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        video { width: 100%; height: 100%; cursor: pointer; }
+        .controls-overlay {
+            position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4);
+            display: flex; flex-direction: column; justify-content: space-between;
+            opacity: 0; transition: opacity 0.3s; z-index: 2;
+        }
         .player-container:hover .controls-overlay, .player-container.paused .controls-overlay { opacity: 1; }
         .top-bar { padding: 15px; color: white; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
-        .mid-controls { display: flex; justify-content: center; align-items: center; gap: 40px; color: white; height: 100%; }
+        .mid-controls { display: flex; justify-content: center; align-items: center; gap: 40px; color: white; }
         .mid-controls i { font-size: 40px; cursor: pointer; transition: 0.2s; }
+        .mid-controls i:hover { transform: scale(1.1); }
         
         .bottom-controls { padding: 10px 20px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); }
+        
         .progress-area { height: 5px; width: 100%; background: rgba(255,255,255,0.2); margin-bottom: 10px; cursor: pointer; border-radius: 5px; }
         .progress-bar { height: 100%; width: 0%; background: #e91e63; position: relative; border-radius: 5px; }
+        .progress-bar::after { content: ''; position: absolute; right: -7px; top: -5px; height: 15px; width: 15px; background: #e91e63; border-radius: 50%; box-shadow: 0 0 8px #e91e63; }
+
         .bottom-btns { display: flex; align-items: center; justify-content: space-between; color: white; }
+        .left, .right { display: flex; align-items: center; gap: 15px; }
+        .bottom-btns i { cursor: pointer; font-size: 18px; }
+        
+        /* স্পিড ও কোয়ালিটি ড্রপডাউন */
         select { background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 2px 5px; cursor: pointer; font-size: 12px; outline: none; }
+        select option { background: #222; }
     </style>
 </head>
 <body>
 
     <div id="loginPage" class="page active">
         <div class="login-box">
-            <h1 style="color: #e91e63;">🎓</h1>
-            <h2>Tarafder Academy</h2>
+            <h1 style="color: #e91e63; margin-bottom: 10px;">🎓</h1>
+            <h2 style="color: #333;">Tarafder Academy</h2>
             <input type="tel" placeholder="আপনার মোবাইল নম্বর" id="phone">
             <button class="btn" onclick="showPage('otpPage')">OTP পাঠান</button>
         </div>
@@ -52,134 +77,157 @@
 
     <div id="otpPage" class="page">
         <div class="login-box">
-            <h3>ভেরিফিকেশন</h3>
+            <h3 style="color: #333;">ভেরিফিকেশন</h3>
+            <p style="font-size: 13px; color: #666; margin-bottom: 10px;">আপনার ফোনে পাঠানো কোডটি দিন</p>
             <input type="number" placeholder="0000">
             <button class="btn" style="background: #4caf50;" onclick="showPage('homePage')">ভেরিফাই করুন</button>
         </div>
     </div>
 
     <div id="homePage" class="page">
-        <h2 style="text-align: center; margin-top: 20px;">ড্যাশবোর্ড</h2>
+        <h2 style="text-align: center; margin-top: 20px; color: #333;">ড্যাশবোর্ড</h2>
         <div class="grid">
-            <div class="card" onclick="showPage('lecturePage')"><i class="fas fa-play-circle"></i><h3>রেকর্ডেড ক্লাস</h3></div>
-            <div class="card"><i class="fas fa-broadcast-tower"></i><h3>লাইভ ক্লাস</h3></div>
-            <div class="card"><i class="fas fa-file-alt"></i><h3>লেকচার নোট</h3></div>
-            <div class="card"><i class="fas fa-trophy"></i><h3>কুইজ</h3></div>
+            <div class="card" onclick="showPage('lecturePage')">
+                <i class="fas fa-play-circle"></i>
+                <h3 style="color: #333;">রেকর্ডেড ক্লাস</h3>
+            </div>
+            <div class="card">
+                <i class="fas fa-broadcast-tower"></i>
+                <h3 style="color: #333;">লাইভ ক্লাস</h3>
+            </div>
+            <div class="card">
+                <i class="fas fa-file-alt"></i>
+                <h3 style="color: #333;">লেকচার নোট</h3>
+            </div>
+            <div class="card">
+                <i class="fas fa-trophy"></i>
+                <h3 style="color: #333;">কুইজ</h3>
+            </div>
         </div>
     </div>
 
     <div id="lecturePage" class="page">
-        <h3 style="text-align: center;">HSC Biology 1st Paper</h3>
-        <div class="card" onclick="playVideo()" style="text-align: left; padding: 15px; margin: 20px auto; max-width: 500px; border-left: 4px solid #e91e63;">
-            <p>▶️ লেকচার ১: কোষ ও এর গঠন</p>
+        <h3 style="margin-bottom: 20px; color: #333; text-align: center;">HSC Biology 1st Paper</h3>
+        <div class="card" onclick="playVideo()" style="text-align: left; padding: 15px; max-width: 500px; margin: 10px auto; border-bottom: none; border-left: 4px solid #e91e63; background: #fff;">
+            <p style="color: #333; font-weight: 500;">▶️ লেকচার ১: কোষ ও এর গঠন</p>
+        </div>
+        <div style="text-align: center;">
+            <button class="btn" style="width: auto; margin-top: 20px; background: #555;" onclick="showPage('homePage')">পিছনে যান</button>
         </div>
     </div>
 
     <div id="videoPage" class="page">
         <div class="player-container paused" id="mainContainer">
-            <div id="ytPlayer"></div>
+            <video id="mainVideo" src="sample.mp4"></video>
 
             <div class="controls-overlay">
                 <div class="top-bar">লেকচার ১: কোষ ও এর গঠন (Biology)</div>
-                <div class="mid-controls" onclick="togglePlay()">
-                    <i class="fas fa-backward-step" onclick="event.stopPropagation(); rewind()"></i>
+                <div class="mid-controls">
+                    <i class="fas fa-backward-step" onclick="rewind()"></i>
                     <i class="fas fa-play" id="centerPlayBtn" style="font-size: 65px;"></i>
-                    <i class="fas fa-forward-step" onclick="event.stopPropagation(); forward()"></i>
+                    <i class="fas fa-forward-step" onclick="forward()"></i>
                 </div>
                 <div class="bottom-controls">
-                    <div class="progress-area" id="progressArea" onclick="seek(event)">
+                    <div class="progress-area" id="progressArea">
                         <div class="progress-bar" id="mainProgressBar"></div>
                     </div>
                     <div class="bottom-btns">
                         <div class="left">
-                            <i class="fas fa-play" id="bottomPlayBtn" onclick="togglePlay()"></i>
+                            <i class="fas fa-play" id="bottomPlayBtn"></i>
                             <span style="font-size: 14px;"><span id="curr">0:00</span> / <span id="dur">0:00</span></span>
                         </div>
                         <div class="right">
                             <select id="speed" onchange="changeSpeed()">
-                                <option value="1">1.0x</option>
+                                <option value="1" selected>1.0x</option>
                                 <option value="1.5">1.5x</option>
                                 <option value="2">2.0x</option>
-                                <option value="4" selected>4.0x</option>
+                                <option value="4">4.0x</option>
                             </select>
+                            
+                            <select>
+                                <option value="360">360p</option>
+                                <option value="720">720p</option>
+                                <option value="1080">1080p</option>
+                                <option value="1440">2K</option>
+                                <option value="2160" selected>4K</option>
+                            </select>
+                            
                             <i class="fas fa-expand" onclick="toggleFull()"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div style="text-align: center; margin-top: 20px;">
-            <button class="btn" style="width: auto; background: #333;" onclick="closeVideo()">ভিডিও বন্ধ করুন</button>
+        <div style="text-align: center;">
+            <button class="btn" style="width: auto; background: #333; padding: 10px 30px;" onclick="showPage('lecturePage')">ভিডিও বন্ধ করুন</button>
         </div>
     </div>
 
-    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        let player;
+        const video = document.getElementById('mainVideo');
         const container = document.getElementById('mainContainer');
         const progressBar = document.getElementById('mainProgressBar');
+        const progressArea = document.getElementById('progressArea');
         const centerBtn = document.getElementById('centerPlayBtn');
         const bottomBtn = document.getElementById('bottomPlayBtn');
 
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('ytPlayer', {
-                videoId: 'mB5l-X0r38M', // তোর ইউটিউব ভিডিও আইডি
-                playerVars: { 'autoplay': 0, 'controls': 0, 'rel': 0, 'modestbranding': 1, 'disablekb': 1 },
-                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
-            });
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id !== 'videoPage') video.pause();
         }
 
-        function onPlayerReady() {
-            setInterval(() => {
-                if (player && player.getCurrentTime) {
-                    let cur = player.getCurrentTime();
-                    let dur = player.getDuration();
-                    progressBar.style.width = (cur / dur * 100) + "%";
-                    document.getElementById('curr').innerText = formatTime(cur);
-                    document.getElementById('dur').innerText = formatTime(dur);
-                }
-            }, 1000);
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data == YT.PlayerState.PLAYING) {
-                container.classList.remove('paused');
-                centerBtn.classList.replace('fa-play', 'fa-pause');
-                bottomBtn.classList.replace('fa-play', 'fa-pause');
-            } else {
-                container.classList.add('paused');
-                centerBtn.classList.replace('fa-pause', 'fa-play');
-                bottomBtn.classList.replace('fa-pause', 'fa-play');
-            }
+        function playVideo() {
+            showPage('videoPage');
+            video.play();
+            updateIcons();
         }
 
         function togglePlay() {
-            if (player.getPlayerState() == 1) player.pauseVideo();
-            else player.playVideo();
+            if(video.paused) video.play();
+            else video.pause();
+            updateIcons();
         }
 
-        function rewind() { player.seekTo(player.getCurrentTime() - 10); }
-        function forward() { player.seekTo(player.getCurrentTime() + 10); }
-        function changeSpeed() { player.setPlaybackRate(parseFloat(document.getElementById('speed').value)); }
-        function seek(e) {
-            let pct = e.offsetX / document.getElementById('progressArea').clientWidth;
-            player.seekTo(pct * player.getDuration());
+        function updateIcons() {
+            if(video.paused) {
+                container.classList.add('paused');
+                centerBtn.classList.replace('fa-pause', 'fa-play');
+                bottomBtn.classList.replace('fa-pause', 'fa-play');
+            } else {
+                container.classList.remove('paused');
+                centerBtn.classList.replace('fa-play', 'fa-pause');
+                bottomBtn.classList.replace('fa-play', 'fa-pause');
+            }
         }
+
+        centerBtn.onclick = togglePlay;
+        bottomBtn.onclick = togglePlay;
+        video.onclick = togglePlay;
+
+        function forward() { video.currentTime += 10; }
+        function rewind() { video.currentTime -= 10; }
+
+        video.ontimeupdate = () => {
+            let percent = (video.currentTime / video.duration) * 100;
+            progressBar.style.width = percent + "%";
+            document.getElementById('curr').innerText = formatTime(video.currentTime);
+        };
+        video.onloadedmetadata = () => { document.getElementById('dur').innerText = formatTime(video.duration); };
 
         function formatTime(t) {
             let m = Math.floor(t/60), s = Math.floor(t%60);
             return m + ":" + (s < 10 ? '0'+s : s);
         }
 
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
+        progressArea.onclick = (e) => {
+            video.currentTime = (e.offsetX / progressArea.clientWidth) * video.duration;
+        };
 
-        function playVideo() { showPage('videoPage'); setTimeout(() => { player.playVideo(); player.setPlaybackRate(4); }, 1000); }
-        function closeVideo() { player.pauseVideo(); showPage('lecturePage'); }
+        function changeSpeed() { video.playbackRate = document.getElementById('speed').value; }
         function toggleFull() { if(!document.fullscreenElement) container.requestFullscreen(); else document.exitFullscreen(); }
+
+        video.ondblclick = (e) => { if(e.offsetX > video.clientWidth/2) forward(); else rewind(); };
     </script>
 </body>
 </html>
-
